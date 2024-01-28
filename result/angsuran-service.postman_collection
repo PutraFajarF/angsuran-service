@@ -1,0 +1,88 @@
+{
+	"info": {
+		"_postman_id": "a56ac310-1453-4426-9af7-64ef1afe197d",
+		"name": "service-loan-abc",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20214265"
+	},
+	"item": [
+		{
+			"name": "submitAngsuran",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"plafond\": 10000000,\r\n    \"lama_pinjaman\": 12,\r\n    \"bunga\": -3,\r\n    \"tanggal_mulai\": \"2018-08-10\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8001/v1/angsuran",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"v1",
+						"angsuran"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "generateAngsuranXlsx",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"plafond\": 10000000,\r\n    \"lama_pinjaman\": 12,\r\n    \"bunga\": -3,\r\n    \"tanggal_mulai\": \"2018-08-10\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8001/v1/angsuran",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"v1",
+						"angsuran"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "checkHealth",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8001/v1/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"v1",
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
