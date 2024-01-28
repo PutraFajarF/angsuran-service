@@ -1,0 +1,16 @@
+app:
+  app_name: 'angsuram-service'
+  app_version: '1.0.0'
+  app_environment: 'development'
+  app_base_dir: ''
+  app_time_zone: 'Asia/Jakarta'
+
+httpserver:
+  httpserver_port: '8080'
+  httpserver_use_ssl: false
+  httpserver_ssl_key: ''
+  httpserver_ssl_cert: ''
+
+logger:
+  log_level: 'debug'
+  log_path: '.'
