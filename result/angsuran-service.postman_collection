@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"plafond\": 10000000,\r\n    \"lama_pinjaman\": 12,\r\n    \"bunga\": -3,\r\n    \"tanggal_mulai\": \"2018-08-10\"\r\n}",
+					"raw": "{\r\n    \"plafond\": 10000000,\r\n    \"lama_pinjaman\": 12,\r\n    \"bunga\": 0.05,\r\n    \"tanggal_mulai\": \"2018-08-10\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -37,12 +37,28 @@
 		},
 		{
 			"name": "generateAngsuranXlsx",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+						"type": "text"
+					},
+					{
+						"key": "Content-Disposisition",
+						"value": "attachment; filename=AngsuranTable.xlsx",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"plafond\": 10000000,\r\n    \"lama_pinjaman\": 12,\r\n    \"bunga\": -3,\r\n    \"tanggal_mulai\": \"2018-08-10\"\r\n}",
+					"raw": "{\r\n    \"plafond\": 10000000,\r\n    \"lama_pinjaman\": 12,\r\n    \"bunga\": 0.05,\r\n    \"tanggal_mulai\": \"2018-08-10\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -50,7 +66,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8001/v1/angsuran",
+					"raw": "http://localhost:8001/v1/angsuran-xlsx",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -58,7 +74,7 @@
 					"port": "8001",
 					"path": [
 						"v1",
-						"angsuran"
+						"angsuran-xlsx"
 					]
 				}
 			},
