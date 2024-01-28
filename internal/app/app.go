@@ -7,4 +7,5 @@ import (
 
 func Run(cfg *config.Config) {
 	fmt.Println("Start service-angsuran..")
+
 }

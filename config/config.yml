@@ -1,5 +1,5 @@
 app:
-  app_name: 'angsuram-service'
+  app_name: 'angsuran-service'
   app_version: '1.0.0'
   app_environment: 'development'
   app_base_dir: ''

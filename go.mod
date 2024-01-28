@@ -2,7 +2,10 @@ module angsuran-service
 
 go 1.19
 
-require github.com/sirupsen/logrus v1.9.3
+require (
+	github.com/gorilla/mux v1.8.1
+	github.com/sirupsen/logrus v1.9.3
+)
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
