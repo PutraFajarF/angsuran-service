@@ -12,6 +12,7 @@ type (
 		App        `yaml:"app"`
 		HTTPServer `yaml:"httpserver"`
 		Log        `yaml:"logger"`
+		Excelize   `yaml:"excelize"`
 	}
 
 	// App -.
@@ -35,6 +36,11 @@ type (
 	Log struct {
 		Level string `env-required:"true" yaml:"log_level"   env:"LOG_LEVEL"`
 		Path  string `yaml:"log_path"`
+	}
+
+	// Excelize -.
+	Excelize struct {
+		Path string `yaml:"xlsx_path"`
 	}
 )
 

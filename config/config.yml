@@ -14,3 +14,6 @@ httpserver:
 logger:
   log_level: 'debug'
   log_path: '.'
+
+excelize:
+  xlsx_path: './files/angsuran.xlsx'

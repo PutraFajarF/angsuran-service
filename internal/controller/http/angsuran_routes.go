@@ -24,4 +24,5 @@ func NewAngsuranRoutes(r *mux.Router, l *logger.Logger, cfg *config.Config, au u
 		w.Write([]byte("Ok Service Angsuran Running.."))
 	}).Methods(http.MethodGet)
 	group.HandleFunc("/angsuran", angsuranRoutes.CalculateAngsuranHandler).Methods(http.MethodPost)
+	group.HandleFunc("/angsuran-xlsx", angsuranRoutes.GenerateExcelAngsuranHandler).Methods(http.MethodPost)
 }

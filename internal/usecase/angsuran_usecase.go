@@ -9,11 +9,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
+
+	"github.com/pkg/errors"
+	"github.com/xuri/excelize/v2"
 )
 
 type IAngsuranUsecase interface {
 	CalculateAngsuran(data *request.AngsuranRequest) ([]*entity.Angsuran, error)
+	CreateExcelFile(data []*entity.Angsuran) (*excelize.File, error)
 }
 
 type AngsuranUsecase struct {
@@ -119,4 +124,75 @@ func (a *AngsuranUsecase) CalculateAngsuran(data *request.AngsuranRequest) ([]*e
 	}, logger.LVL_INFO)
 
 	return angsurans, nil
+}
+
+func (a *AngsuranUsecase) CreateExcelFile(data []*entity.Angsuran) (*excelize.File, error) {
+	startTime := time.Now()
+	xlsx := excelize.NewFile()
+	defer func() {
+		if err := xlsx.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	sheetName := "AngsuranTable"
+	index, err := xlsx.NewSheet(sheetName)
+	if err != nil {
+		a.l.CreateLog(&logger.Log{
+			Event:        util.USECASE_GENERATEXLSX_ANGSURAN + "|POST|NEWSHEET",
+			Method:       "POST",
+			StatusCode:   http.StatusInternalServerError,
+			Request:      "Set NewSheet XLSX Angsuran",
+			Response:     err.Error(),
+			ResponseTime: time.Since(startTime),
+			Message:      util.FAIL_GENERATE_ANGSURAN_XLSX,
+		}, logger.LVL_ERROR)
+		return nil, err
+	}
+
+	// Set header
+	xlsx.SetCellValue(sheetName, "A1", "Angsuran Ke")
+	xlsx.SetCellValue(sheetName, "B1", "Tanggal")
+	xlsx.SetCellValue(sheetName, "C1", "Total Angsuran")
+	xlsx.SetCellValue(sheetName, "D1", "Angsuran Pokok")
+	xlsx.SetCellValue(sheetName, "E1", "Angsuran Bunga")
+	xlsx.SetCellValue(sheetName, "F1", "Sisa Pinjaman")
+
+	var wg sync.WaitGroup
+
+	// Fill data
+	for i, val := range data {
+		wg.Add(1)
+		go func(i int, val *entity.Angsuran) {
+			defer wg.Done()
+			row := i + 2
+			xlsx.SetCellValue(sheetName, fmt.Sprintf("A%d", row), val.AngsuranKe)
+			xlsx.SetCellValue(sheetName, fmt.Sprintf("B%d", row), val.Tanggal)
+			xlsx.SetCellValue(sheetName, fmt.Sprintf("C%d", row), val.TotalAngsuran)
+			xlsx.SetCellValue(sheetName, fmt.Sprintf("D%d", row), val.AngsuranPokok)
+			xlsx.SetCellValue(sheetName, fmt.Sprintf("E%d", row), val.AngsuranBunga)
+			xlsx.SetCellValue(sheetName, fmt.Sprintf("F%d", row), val.SisaPinjaman)
+		}(i, val)
+	}
+
+	wg.Wait()
+
+	xlsx.SetActiveSheet(index)
+
+	filePath := a.cfg.Excelize.Path
+	err = xlsx.SaveAs(filePath)
+	if err != nil {
+		a.l.CreateLog(&logger.Log{
+			Event:        util.USECASE_GENERATEXLSX_ANGSURAN + "|POST|SAVE",
+			Method:       "POST",
+			StatusCode:   http.StatusInternalServerError,
+			Request:      "Save XLSX Angsuran",
+			Response:     err.Error(),
+			ResponseTime: time.Since(startTime),
+			Message:      util.FAIL_GENERATE_ANGSURAN_XLSX,
+		}, logger.LVL_ERROR)
+		return nil, errors.Wrap(err, "failed to save Excel file")
+	}
+
+	return xlsx, nil
 }
