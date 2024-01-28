@@ -2,26 +2,64 @@ package http
 
 import (
 	"angsuran-service/internal/controller/request"
+	"angsuran-service/internal/controller/response"
+	"angsuran-service/pkg/logger"
 	"angsuran-service/util"
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 func (a *AngsuranRoutes) CalculateAngsuranHandler(w http.ResponseWriter, r *http.Request) {
 	var reqBody request.AngsuranRequest
+
+	timeStart := time.Now()
+	req := map[string]interface{}{"payload": reqBody}
+	jsonReq, _ := json.Marshal(req)
+
 	err := json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		a.l.CreateLog(&logger.Log{
+			Event:        util.HTTP_ANGSURAN + "|POST",
+			Method:       "POST",
+			StatusCode:   http.StatusBadRequest,
+			Request:      string(jsonReq),
+			Response:     err.Error(),
+			ResponseTime: time.Since(timeStart),
+			Message:      util.ErrInvalidPayload,
+		}, logger.LVL_ERROR)
+		response.HttpErrorResponse(w, false, http.StatusBadRequest, "400", err.Error())
 		return
 	}
 
 	if err := util.ValidateRequestBody(reqBody); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		a.l.CreateLog(&logger.Log{
+			Event:        util.HTTP_ANGSURAN + "|POST",
+			Method:       "POST",
+			StatusCode:   http.StatusBadRequest,
+			Request:      string(jsonReq),
+			Response:     err.Error(),
+			ResponseTime: time.Since(timeStart),
+			Message:      util.ErrInvalidPayload,
+		}, logger.LVL_ERROR)
+		response.HttpErrorResponse(w, false, http.StatusBadRequest, "400", err.Error())
 		return
 	}
 
-	angsurans := a.au.CalculateAngsuran(reqBody.Plafond, reqBody.LamaPinjaman, reqBody.Bunga, util.ParseTanggal(reqBody.TanggalMulai))
+	angsurans, err := a.au.CalculateAngsuran(&reqBody)
+	if err != nil {
+		a.l.CreateLog(&logger.Log{
+			Event:        util.HTTP_ANGSURAN + "|POST",
+			Method:       "POST",
+			StatusCode:   http.StatusBadRequest,
+			Request:      string(jsonReq),
+			Response:     err.Error(),
+			ResponseTime: time.Since(timeStart),
+			Message:      util.FAIL_CALCULATE_ANGSURAN,
+		}, logger.LVL_ERROR)
+		response.HttpErrorResponse(w, false, http.StatusBadRequest, "400", err.Error())
+		return
+	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{"angsurans": angsurans})
+	response.HttpSuccessResponse(w, true, http.StatusOK, "200", util.SUCCESS_CALCULATE_ANGSURAN, angsurans)
 }
